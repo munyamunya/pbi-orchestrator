@@ -49,7 +49,8 @@ export class PBIOrchestrator {
 
     try {
       const handle = this.client.workflow.getHandle(workflowId);
-      return await handle.result();
+      const result = await handle.result();
+      return result as PBIWorkflowResult;
     } catch (error) {
       if (error instanceof WorkflowNotFoundError) {
         throw new Error(`Workflow not found: ${workflowId}`);

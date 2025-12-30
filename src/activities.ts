@@ -57,6 +57,7 @@ export async function releaseLock(workflowId: string): Promise<void> {
   console.log(`[${workflowId}] Releasing concurrency slot...`);
   semaphore.release();
   console.log(`[${workflowId}] Concurrency slot released. Active: ${semaphore.getCurrentCount()}`);
+  return Promise.resolve();
 }
 
 export async function processPBI(
