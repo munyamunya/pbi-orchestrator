@@ -16,7 +16,28 @@ jobs:
     steps:
       - name: Check if direct push
         run: |
-          if [ "${{ github.event.head_commit.author.username }}" != "github-actions[bot]" ]; then
-            echo "::error::Direct pushes to main are not allowed. Please use pull requests."
-            exit 1
+          # This workflow prevents direct pushes to main, but allows:
+          # 1. PR merge commits (commit message starts with "Merge pull request #")
+          # 2. Commits by github-actions[bot]
+          
+          # Get commit message and actor
+          COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
+          ACTOR="${{ github.actor }}"
+          
+          # Check if this is a PR merge commit
+          if echo "$COMMIT_MESSAGE" | grep -q "^Merge pull request #"; then
+            echo "✓ This is a PR merge commit - allowed"
+            exit 0
           fi
+          
+          # Check if actor is github-actions[bot]
+          if [ "$ACTOR" = "github-actions[bot]" ]; then
+            echo "✓ This is an automated commit by github-actions[bot] - allowed"
+            exit 0
+          fi
+          
+          # If we reach here, this is a direct push by a non-bot actor
+          echo "::error::Direct pushes to main are not allowed. Please use pull requests."
+          echo "::error::Commit message: $COMMIT_MESSAGE"
+          echo "::error::Actor: $ACTOR"
+          exit 1
