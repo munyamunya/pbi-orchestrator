@@ -21,10 +21,12 @@ jobs:
         run: |
           # This workflow prevents direct pushes to main, but allows:
           # 1. PR merge commits (commit message starts with "Merge pull request #")
+          #    Note: This matches GitHub's default merge strategy. Squash and rebase
+          #    merges may have different message formats and will be blocked unless
+          #    performed by github-actions[bot].
           # 2. Commits by github-actions[bot]
           
-          # Check if this is a PR merge commit
-          # Note: This pattern matches GitHub's default merge commit message format
+          # Check if this is a PR merge commit (default merge strategy)
           if printf '%s\n' "$COMMIT_MESSAGE" | grep -q '^Merge pull request #'; then
             echo "✓ This is a PR merge commit - allowed"
             exit 0
